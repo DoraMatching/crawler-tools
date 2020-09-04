@@ -1,3 +1,6 @@
+# Sequelize
+*.db
+
 # Logs
 logs
 *.log
