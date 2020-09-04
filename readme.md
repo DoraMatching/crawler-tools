@@ -1,6 +1,6 @@
 # Crawler Tools
 
-## Install yarn and sesquelize-cli
+## Install Yarn and Sequelize-cli
 
 ```bash
 [sudo] npm install yarn sequelize-cli -g
