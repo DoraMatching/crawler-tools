@@ -1,0 +1,12 @@
+{
+  "name": "crawler-tools",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "puppeteer": "^5.2.1"
+  }
+}
