@@ -1,48 +1,43 @@
 const puppeteer = require('puppeteer');
+const chalk = require('chalk');
 
-const kipalogHomePage = 'https://kipalog.com';
+const { kipalogCrawler, kipalogPaginateUrl } = require('./crawlers/kipalogCrawler');
 
-const kipalogPaginateUrl = (page = 0) => {
-    return `${kipalogHomePage}/posts/pagination?filter=top&page=${page}`;
-}
-
-const kipalogCrawler = async (browser, article) => {
-    let { title, path, tags } = article;
-
-    tags = tags.map(tag => String(tag.name).toLocaleLowerCase());
-    const pageUrl = `${kipalogHomePage}${path}`;
-
-    const page = await browser.newPage();
-    await page.setDefaultNavigationTimeout(0);
-    await page.goto(pageUrl);
-
-    const content = await page.evaluate(() => {
-        const raw = document.getElementById('content');
-        const htmlContent = raw.outerHTML;
-        const { textContent } = raw;
-        return { htmlContent, textContent };
-    });
-
-    return { title, path, tags, content, home: 'kipalog' };
-}
-
-const paginateCrawler = async (pageUrl) => {
+const paginateCrawler = async (pageUrls) => {
     const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(pageUrl);
 
-    let articlesJSON = await page.evaluate(() => {
-        return document.body.textContent
-    });
+    let articleCounter = 0;
 
-    const articles = JSON.parse(articlesJSON);
-    const resPromise = articles.map(async (article) => {
-        return await kipalogCrawler(browser, article);
-    });
+    for (let i = 0; i < pageUrls.length; i++) {
+        const page = await browser.newPage();
+        await page.goto(pageUrls[i]);
 
-    const res = await Promise.all(resPromise);
+        let articlesJSON = await page.evaluate(() => {
+            return document.body.textContent
+        });
 
-    console.log('DATA', res);
+        const articles = JSON.parse(articlesJSON);
+        articleCounter += articles.length;
+        const resPromise = articles.map(async (article) => {
+            return await kipalogCrawler(browser, article);
+        });
+
+        const res = await Promise.all(resPromise);
+
+        page.close();
+    }
+
+    console.log(chalk.yellow('Crawled successfully: ') + chalk.white.bgRed(`${articleCounter} articles`));
+    browser.close();
 }
 
-paginateCrawler(kipalogPaginateUrl(0));
+const crawler = (start = 0, end = 0) => {
+    let pageUrls = [];
+    for (let i = start; i <= end; i++) {
+        pageUrls.push(kipalogPaginateUrl(i));
+    }
+    paginateCrawler(pageUrls);
+}
+
+crawler(0, 76);
+
