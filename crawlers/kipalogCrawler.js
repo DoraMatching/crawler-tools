@@ -1,8 +1,10 @@
 const chalk = require('chalk');
 
-const articleModel = require('../models').articleModel;
+const { articleModel } = require('../models');
 
 const kipalogHomePage = 'https://kipalog.com';
+
+const type = 'kipalog';
 
 const kipalogPaginateUrl = (page = 0) => {
     return `${kipalogHomePage}/posts/pagination?filter=top&page=${page}`;
@@ -12,7 +14,7 @@ const kipalogCrawler = async (browser, article) => {
     let { title, path, tags } = article;
 
     if (tags.length !== 0)
-        tags = tags.map(tag => String(tag.name).toLocaleLowerCase().trim()).join(';');
+        tags = tags.map(tag => String(tag.name).toLocaleLowerCase().trim().replace(' ', '-')).join(';');
     else
         tags = 'none';
 
@@ -31,7 +33,7 @@ const kipalogCrawler = async (browser, article) => {
     });
 
     page.close();
-    const articleData = { title, path, tags, htmlContent, textContent, from: 'kipalog' };
+    const articleData = { title, path, tags, htmlContent, textContent, from: `${type}` };
     await articleModel.create(articleData);
     return articleData;
 }
@@ -39,5 +41,6 @@ const kipalogCrawler = async (browser, article) => {
 module.exports = {
     kipalogPaginateUrl,
     kipalogCrawler,
-    kipalogHomePage
+    kipalogHomePage,
+    type
 }
