@@ -22,7 +22,13 @@ yarn install
 ## Migration
 
 ```bash
-sequelize db:migrate
+yarn db:migrate
+```
+
+OR - remove old DB and re-migrate
+
+```bash
+yarn db:new # this command will remove developement.db file & migrate DB !
 ```
 
 ## Start crawling data

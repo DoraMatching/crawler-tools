@@ -9,6 +9,7 @@
   },
   "production": {
     "storage": "development.db",
-    "dialect": "sqlite"
+    "dialect": "sqlite",
+    "logging": false
   }
 }

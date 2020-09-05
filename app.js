@@ -5,12 +5,16 @@ const chalk = require('chalk');
 
 const { kipalogCrawler, kipalogPaginateUrl } = require('./crawlers/kipalogCrawler');
 const { daynhauhocCrawler, daynhauhocPaginateUrl } = require('./crawlers/daynhauhocCrawler');
+const { giaphiepCrawler, giaphiepPaginateUrl } = require('./crawlers/giaphiepCrawler');
+const { viblopostCrawler, viblopostPaginateUrl } = require('./crawlers/viblopostCrawler');
 
-const { kipalogLastPage, daynhauhocLastPage, giaphiepLastPage, vibloquestionLastPage } = require('./config/app.config');
+const { kipalogLastPage, daynhauhocLastPage, giaphiepLastPage, vibloquestionLastPage, viblopostLastPage, crawlFrom } = require('./config/app.config');
 
-const crawlers = { kipalogCrawler, daynhauhocCrawler };
-const paginateUrls = { kipalogPaginateUrl, daynhauhocPaginateUrl };
-const lastPages = { kipalogLastPage, daynhauhocLastPage, giaphiepLastPage, vibloquestionLastPage };
+const { getCurrentTime, sleep, getRandomInt } = require('./shared');
+
+const crawlers = { kipalogCrawler, daynhauhocCrawler, giaphiepCrawler, viblopostCrawler };
+const paginateUrls = { kipalogPaginateUrl, daynhauhocPaginateUrl, giaphiepPaginateUrl, viblopostPaginateUrl };
+const lastPages = { kipalogLastPage, daynhauhocLastPage, giaphiepLastPage, vibloquestionLastPage, viblopostLastPage };
 
 const paginateCrawler = async (pageUrls) => {
     const browser = await puppeteer.launch({ headless: true });
@@ -20,6 +24,10 @@ const paginateCrawler = async (pageUrls) => {
     for (let i = 0; i < pageUrls.length; i++) {
         const page = await browser.newPage();
         const { url, type } = pageUrls[i];
+        await page.setDefaultNavigationTimeout(0);
+        let delay = getRandomInt(500, 10_000);
+        console.log(getCurrentTime() + chalk.yellow('Delay... ') + chalk.white.bgRed(`${delay / 1000}s\t`) + chalk.green(url));
+        await sleep(delay);
         await page.goto(url);
 
         let articlesJSON = await page.evaluate(() => {
@@ -30,6 +38,8 @@ const paginateCrawler = async (pageUrls) => {
 
         if (type === 'daynhauhoc') {
             articles = articles.topic_list.topics;
+        } else if (type === 'giaphiep' || type === 'viblopost') {
+            articles = articles.data;
         }
 
         articleCounter += articles.length;
@@ -37,19 +47,19 @@ const paginateCrawler = async (pageUrls) => {
             return await crawlers[`${type}Crawler`](browser, article);
         });
 
-        const res = await Promise.all(resPromise);
+        await Promise.all(resPromise);
 
         page.close();
     }
 
-    console.log(chalk.yellow('Crawled successfully: ') + chalk.white.bgRed(`${articleCounter} articles`));
+    console.log(getCurrentTime() + chalk.yellow('Crawled successfully: ') + chalk.white.bgRed(`${articleCounter} articles`));
     browser.close();
 }
 
 const crawler = () => {
     let pageUrls = [];
 
-    const types = ['kipalog', 'daynhauhoc'];
+    const types = crawlFrom;
 
     types.map(type => {
         const end = lastPages[`${type}LastPage`];
