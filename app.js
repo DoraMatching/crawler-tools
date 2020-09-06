@@ -49,11 +49,11 @@ const paginateCrawler = async (pageUrls) => {
 
         await Promise.all(resPromise);
 
-        page.close();
+        await page.close();
     }
 
     console.log(getCurrentTime() + chalk.yellow('Crawled successfully: ') + chalk.white.bgRed(`${articleCounter} articles`));
-    browser.close();
+    await browser.close();
 }
 
 const crawler = () => {
