@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+errors = [];
+
 const puppeteer = require('puppeteer');
 const chalk = require('chalk');
 
@@ -53,6 +55,7 @@ const paginateCrawler = async (pageUrls) => {
     }
 
     console.log(getCurrentTime() + chalk.yellow('Crawled successfully: ') + chalk.white.bgRed(`${articleCounter} articles`));
+    console.log(getCurrentTime() + chalk.yellow('Error:\t\t') + chalk.white.bgRed(JSON.stringify(errors, null, 2)));
     await browser.close();
 }
 
