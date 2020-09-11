@@ -30,7 +30,7 @@ const daynhauhocCrawler = async (browser, article) => {
     let delay = getRandomInt(500, 10_000);
     console.log(getCurrentTime() + chalk.yellow('Delay... ') + chalk.white.bgRed(`${delay / 1000}s\t`) + chalk.green(pageUrl));
     await sleep(delay);
-    await page.goto(pageUrl);
+    await page.goto(pageUrl, { waitUntil: 'networkidle2' });
 
     console.log(getCurrentTime() + chalk.yellow('Crawling...\t') + chalk.green(pageUrl));
 
@@ -47,8 +47,9 @@ const daynhauhocCrawler = async (browser, article) => {
         console.log(getCurrentTime() + chalk.yellow('Done:\t\t') + chalk.green(pageUrl));
         return articleData;
     } catch (e) {
-        errors.push(pageUrl);
+        global.errors.push(pageUrl);
         console.log(getCurrentTime() + chalk.yellow('Error:\t\t') + chalk.white.bgRed(pageUrl));
+        page.close();
     }
 }
 

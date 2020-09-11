@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-errors = [];
+global.errors = [];
 
 const puppeteer = require('puppeteer');
 const chalk = require('chalk');
@@ -19,7 +19,10 @@ const paginateUrls = { kipalogPaginateUrl, daynhauhocPaginateUrl, giaphiepPagina
 const lastPages = { kipalogLastPage, daynhauhocLastPage, giaphiepLastPage, vibloquestionLastPage, viblopostLastPage };
 
 const paginateCrawler = async (pageUrls) => {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox'],
+    });
 
     let articleCounter = 0;
 
@@ -30,7 +33,7 @@ const paginateCrawler = async (pageUrls) => {
         let delay = getRandomInt(500, 10_000);
         console.log(getCurrentTime() + chalk.yellow('Delay... ') + chalk.white.bgRed(`${delay / 1000}s\t`) + chalk.green(url));
         await sleep(delay);
-        await page.goto(url);
+        await page.goto(url, { waitUntil: 'networkidle2' });
 
         let articlesJSON = await page.evaluate(() => {
             return document.body.textContent;
