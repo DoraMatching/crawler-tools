@@ -21,7 +21,7 @@ const lastPages = { kipalogLastPage, daynhauhocLastPage, giaphiepLastPage, viblo
 const paginateCrawler = async (pageUrls) => {
     const browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox'],
+        args: ['--no-sandbox', '--disable-http2'],
     });
 
     let articleCounter = 0;
@@ -30,7 +30,7 @@ const paginateCrawler = async (pageUrls) => {
         const page = await browser.newPage();
         const { url, type } = pageUrls[i];
         await page.setDefaultNavigationTimeout(0);
-        let delay = getRandomInt(500, 10_000);
+        let delay = getRandomInt(500, 3_000);
         console.log(getCurrentTime() + chalk.yellow('Delay... ') + chalk.white.bgRed(`${delay / 1000}s\t`) + chalk.green(url));
         await sleep(delay);
         await page.goto(url, { waitUntil: 'networkidle2' });

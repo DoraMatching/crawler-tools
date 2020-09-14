@@ -24,14 +24,14 @@ const daynhauhocCrawler = async (browser, article) => {
     let path = `/t/${slug}/${id}`;
     const pageUrl = `${daynhauhocHomePage}${path}`;
 
-    try {
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0);
-    let delay = getRandomInt(500, 10_000);
+    let delay = getRandomInt(500, 3_000);
     console.log(getCurrentTime() + chalk.yellow('Delay... ') + chalk.white.bgRed(`${delay / 1000}s\t`) + chalk.green(pageUrl));
     await sleep(delay);
     await page.goto(pageUrl, { waitUntil: 'networkidle2' });
 
+    try {
     console.log(getCurrentTime() + chalk.yellow('Crawling...\t') + chalk.green(pageUrl));
 
         const { htmlContent, textContent } = await page.evaluate(() => {

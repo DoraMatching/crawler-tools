@@ -22,16 +22,17 @@ const kipalogCrawler = async (browser, article) => {
 
     const pageUrl = `${kipalogHomePage}${path}`;
 
-    try {
+
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0);
-    let delay = getRandomInt(500, 10_000);
+    let delay = getRandomInt(500, 3_000);
     console.log(getCurrentTime() + chalk.yellow('Delay... ') + chalk.white.bgRed(`${delay / 1000}s\t`) + chalk.green(pageUrl));
     await sleep(delay);
     await page.goto(pageUrl, { waitUntil: 'networkidle2' });
 
     console.log(getCurrentTime() + chalk.yellow('Crawling...\t') + chalk.green(pageUrl));
 
+    try {
         const { htmlContent, textContent } = await page.evaluate(() => {
             const raw = document.getElementById('content');
             const htmlContent = raw.outerHTML;
