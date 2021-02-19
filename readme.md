@@ -1,5 +1,7 @@
 # Crawler Tools
 
+A Tool crawl all articles on forums in Vietnam such as Viblo, Kipalog, DayNhauHoc,... written in Javascript programing language.
+
 ## Install Yarn and Sequelize-cli
 
 ```bash
