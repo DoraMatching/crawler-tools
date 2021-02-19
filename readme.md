@@ -1,6 +1,6 @@
 # Crawler Tools
 
-A Tool crawl all articles on forums in Vietnam such as Viblo, Kipalog, DayNhauHoc,... written in Javascript programing language.
+A Tool crawl all articles on forums in Vietnam such as Viblo, Kipalog, DayNhauHoc,... written in Javascript programing language using Puppeteer - Chromium Web Driver.
 
 ## Install Yarn and Sequelize-cli
 
